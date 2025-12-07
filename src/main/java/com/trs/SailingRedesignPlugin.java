@@ -46,6 +46,10 @@ public class SailingRedesignPlugin extends Plugin
 			// value is index of tab
 			clientThread.invokeLater(this::updateUI);
 		}
+
+		if (event.getVarbitId() == VarbitID.SAILING_BOAT_FACILITY_LOCKEDIN) {
+			clientThread.invokeLater(() -> updateUIIfVisible(this::updateBoatName));
+		}
 	}
 
 	@Subscribe

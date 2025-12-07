@@ -9,7 +9,7 @@
             "name": "Debug RuneLite Plugin",
             "request": "launch",
             "mainClass": "com.trs.SailingRedesignPluginTest",
-            "projectName": "${workspaceFolderBasename}",
+            "projectName": "sailing-redesign-${workspaceFolderBasename}",
             "cwd": "${workspaceFolder}",
             "args": "--developer-mode --debug",
             "vmArgs": "-ea",
