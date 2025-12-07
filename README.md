@@ -2,8 +2,12 @@
 
 Redesigns the Sailing Options interface
 
-![Sailing facilities](./docs/facilities.png)
+
+![Sailing UI Change](./docs/cover.png)
+
 
 ## Features
 
-- Expands the viewport, less scrolling
+Expands the viewport, less scrolling
+
+![Sailing facilities](./docs/facilities.png)
