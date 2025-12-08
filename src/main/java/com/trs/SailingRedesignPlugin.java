@@ -18,7 +18,6 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.api.widgets.WidgetSizeMode;
 import net.runelite.api.widgets.WidgetPositionMode;
 import net.runelite.api.ScriptID;
-import net.runelite.api.FontID;
 
 @Slf4j
 @PluginDescriptor(name = "Sailing Redesign")
@@ -30,7 +29,7 @@ public class SailingRedesignPlugin extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
-		clientThread.invokeLater(() -> updateUIIfVisible(this::updateUI));
+		clientThread.invokeLater(() -> runIfSailingPanelVisible(this::updateUI));
 	}
 
 	@Subscribe
@@ -47,8 +46,8 @@ public class SailingRedesignPlugin extends Plugin
 			clientThread.invokeLater(this::updateUI);
 		}
 
-		if (event.getVarbitId() == VarbitID.SAILING_BOAT_FACILITY_LOCKEDIN) {
-			clientThread.invokeLater(() -> updateUIIfVisible(this::updateBoatName));
+		if (event.getVarbitId() == VarbitID.SAILING_SIDEPANEL_CREW_ASSIGNATION) {
+			clientThread.invokeLater(() -> runIfSailingPanelVisible(() -> toggleCrewAssignmentTitle(event.getValue() == 0)));
 		}
 	}
 
@@ -56,17 +55,20 @@ public class SailingRedesignPlugin extends Plugin
 	public void onVarClientIntChanged(VarClientIntChanged event)
 	{
 		if (event.getIndex() == VarClientID.TOPLEVEL_PANEL) {
-			clientThread.invokeLater(() -> updateUIIfVisible(this::updateUI));
-		}
-
-		if (event.getIndex() == VarClientID.BUFF_BAR_DODGER_UPDATE) {
-			clientThread.invokeLater(() -> updateUIIfVisible(this::updateBoatName));
+			clientThread.invokeLater(() -> runIfSailingPanelVisible(this::updateUI));
 		}
 	}
 
-	protected void updateUIIfVisible(Runnable callback) {
+	protected void runIfSailingPanelVisible(Runnable callback) {
 		if (client.getVarcIntValue(VarClientID.TOPLEVEL_PANEL) == 0 && client.getVarbitValue(VarbitID.SAILING_SIDEPANEL_VISIBLE) == 1) {
 			callback.run();
+		}
+	}
+
+	protected void toggleCrewAssignmentTitle(boolean hidden) {
+		var sailingTabTitleWidget = client.getWidget(InterfaceID.SailingSidepanel.TAB_TITLE);
+		if (sailingTabTitleWidget != null) {
+			sailingTabTitleWidget.setHidden(hidden);
 		}
 	}
 
@@ -95,7 +97,8 @@ public class SailingRedesignPlugin extends Plugin
 				sailingBoatNameText.setOriginalHeight(0);
 				sailingBoatNameText.setYPositionMode(WidgetPositionMode.ABSOLUTE_TOP);
 				sailingBoatNameText.setXPositionMode(WidgetPositionMode.ABSOLUTE_CENTER);
-				sailingBoatNameText.setFontId(FontID.PLAIN_11);
+				// Font changes often when pressing buttons, leave it for now until we find a better solution
+				// sailingBoatNameText.setFontId(FontID.PLAIN_11);
 				sailingBoatNameText.revalidate();
 			}
 		}
@@ -309,18 +312,6 @@ public class SailingRedesignPlugin extends Plugin
 				if (child != null) {
 					child.revalidate();
 				}
-			}
-		}
-	}
-
-
-	protected void updateBoatName() {
-		var sailingBoatName = client.getWidget(InterfaceID.SailingSidepanel.BOAT_NAME);
-		if (sailingBoatName != null) {
-			var sailingBoatNameText = sailingBoatName.getChild(0);
-			if (sailingBoatNameText != null) {
-				sailingBoatNameText.setFontId(FontID.PLAIN_11);
-				sailingBoatNameText.revalidate();
 			}
 		}
 	}
